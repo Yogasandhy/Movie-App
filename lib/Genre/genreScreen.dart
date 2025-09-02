@@ -7,8 +7,7 @@ class GenreScreen extends StatefulWidget {
   final int genreId;
   final String genreName;
 
-  const GenreScreen({required this.genreId, required this.genreName, Key? key})
-      : super(key: key);
+  const GenreScreen({required this.genreId, required this.genreName, super.key});
 
   @override
   _GenreScreenState createState() => _GenreScreenState();
@@ -35,11 +34,11 @@ class _GenreScreenState extends State<GenreScreen> {
           appBar: AppBar(
             title: Text(
               widget.genreName,
-              style: TextStyle(color: Colors.white),
+              style: const TextStyle(color: Colors.white),
             ),
             centerTitle: true,
-            backgroundColor: Color(0xFF03002e),
-            iconTheme: IconThemeData(
+            backgroundColor: const Color(0xFF03002e),
+            iconTheme: const IconThemeData(
               color: Colors.white, 
             ),
           ),
@@ -49,9 +48,9 @@ class _GenreScreenState extends State<GenreScreen> {
               future: _fetchMoviesFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
+                  return const Center(child: CircularProgressIndicator());
                 } else if (snapshot.error != null) {
-                  return Center(child: Text('An error occurred!'));
+                  return const Center(child: Text('An error occurred!'));
                 } else {
                   return Consumer<GenreProvider>(
                     builder: (context, genreProvider, child) {

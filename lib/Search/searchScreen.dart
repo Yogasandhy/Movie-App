@@ -19,8 +19,8 @@ class _SearchScreenState extends State<SearchScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SearchBar(
-                backgroundColor: MaterialStatePropertyAll(Colors.grey),
-                padding: const MaterialStatePropertyAll<EdgeInsets>(
+                backgroundColor: const WidgetStatePropertyAll(Colors.grey),
+                padding: const WidgetStatePropertyAll<EdgeInsets>(
                     EdgeInsets.symmetric(horizontal: 16.0)),
                 onTap: () {},
                 onChanged: (value) {
@@ -29,10 +29,10 @@ class _SearchScreenState extends State<SearchScreen> {
                 },
                 leading: const Icon(Icons.search),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20.0,
               ),
-              Text('Recent Searches',
+              const Text('Recent Searches',
                   style: TextStyle(color: Colors.white, fontSize: 17.0)),
               Expanded(
                 child: Consumer<SearchProvider>(

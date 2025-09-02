@@ -1,16 +1,77 @@
-# movie_api
+# Movie App 🎬
 
-A new Flutter project.
+A modern Flutter application for discovering and exploring movies using The Movie Database (TMDB) API.
 
-## Getting Started
+## Features ✨
 
-This project is a starting point for a Flutter application.
+- **Browse Movies**: Discover popular, top-rated, and now playing movies
+- **Movie Details**: View comprehensive movie information with ratings and overview
+- **Search Movies**: Find your favorite movies quickly
+- **Genre Categories**: Filter movies by genre (Action, Romance, Comedy, Horror, Drama)
+- **Modern UI**: Clean and responsive design with smooth animations
+- **Movie Collections**: See all movies in organized collections
 
-A few resources to get you started if this is your first Flutter project:
+## Screenshots 📱
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+The app features a modern dark theme with:
+- Clean navigation with bottom tabs
+- Featured movie carousel
+- Grid and list movie layouts
+- Detailed movie information screens
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Tech Stack 🛠️
+
+- **Framework**: Flutter
+- **State Management**: Provider
+- **API**: The Movie Database (TMDB)
+- **HTTP Client**: http package
+- **UI Components**: Material Design 3
+
+## API Setup 🔑
+
+This app uses TMDB API. To run the project:
+
+1. Get your API key from [TMDB](https://www.themoviedb.org/settings/api)
+2. The API key is already configured in the project files
+
+## Getting Started 🚀
+
+1. Clone the repository
+```bash
+git clone https://github.com/Yogasandhy/Movie-App.git
+```
+
+2. Install dependencies
+```bash
+flutter pub get
+```
+
+3. Run the app
+```bash
+flutter run
+```
+
+## Project Structure 📁
+
+```
+lib/
+├── Detail/          # Movie detail screens and providers
+├── Genre/           # Genre filtering functionality
+├── Home/            # Home screen and movie lists
+├── Search/          # Search functionality
+├── bottomnavbar.dart # Bottom navigation
+├── main.dart        # App entry point
+└── movie_model.dart # Data models
+```
+
+## Contributing 🤝
+
+Feel free to fork this project and submit pull requests for any improvements.
+
+## License 📄
+
+This project is open source and available under the [MIT License](LICENSE).
+
+---
+
+Built with ❤️ using Flutter

@@ -18,28 +18,30 @@ class DetailProvider with ChangeNotifier {
   }
 
   Future<void> fetchMovieDetail(int movieId) async {
-  _isLoading = true;
-  _errorMessage = '';
-  notifyListeners();
+    if (_isLoading) return; // Prevent multiple calls
+    
+    _isLoading = true;
+    _errorMessage = '';
+    notifyListeners();
 
-  try {
-    final response = await http.get(
-      Uri.parse(
-        'https://api.themoviedb.org/3/movie/$movieId?api_key=b65184d1ea7d849396c5ce79ba26bf3b',
-      ),
-    );
+    try {
+      final response = await http.get(
+        Uri.parse(
+          'https://api.themoviedb.org/3/movie/$movieId?api_key=b65184d1ea7d849396c5ce79ba26bf3b',
+        ),
+      );
 
-    if (response.statusCode == 200) {
-      _movieDetail = MovieDetailModel.fromJson(json.decode(response.body));
-    } else {
-      _errorMessage = 'Failed to load movie detail';
+      if (response.statusCode == 200) {
+        _movieDetail = MovieDetailModel.fromJson(json.decode(response.body));
+      } else {
+        _errorMessage = 'Failed to load movie detail';
+      }
+    } catch (e) {
+      _errorMessage = 'An error occurred: $e';
     }
-  } catch (e) {
-    _errorMessage = 'An error occurred: $e';
-  }
 
-  _isLoading = false;
-  notifyListeners();
-}
+    _isLoading = false;
+    notifyListeners();
+  }
 
 }

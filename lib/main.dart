@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple,),
-        scaffoldBackgroundColor: Color(0xFF03002e), 
+        scaffoldBackgroundColor: const Color(0xFF03002e), 
         useMaterial3: true,
       ),
       home: const BottomnavbarScreen(),
