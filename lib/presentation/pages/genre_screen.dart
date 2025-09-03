@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:movie_api/Genre/genreProvider.dart';
-import 'package:movie_api/movie_model.dart';
+import '../providers/genre_provider.dart';
+import '../../features/movies/data/models/legacy_movie_model.dart';
 import 'package:provider/provider.dart';
 
 class GenreScreen extends StatefulWidget {
@@ -58,7 +58,7 @@ class _GenreScreenState extends State<GenreScreen> {
                         crossAxisCount: 3,
                         childAspectRatio: 2 / 3,
                         children: genreProvider.moviesByGenre.map((movie) {
-                          return _buildMovieCard(movie);
+                          return _buildMovieCard(_convertToResult(movie));
                         }).toList(),
                       );
                     },
@@ -68,6 +68,40 @@ class _GenreScreenState extends State<GenreScreen> {
             ),
           ),
         ));
+  }
+
+  Result _convertToResult(movie) {
+    return Result(
+      adult: movie.adult,
+      backdropPath: movie.backdropPath,
+      genreIds: movie.genreIds,
+      id: movie.id,
+      originalLanguage: _getOriginalLanguage(movie.originalLanguage),
+      originalTitle: movie.originalTitle,
+      overview: movie.overview,
+      popularity: movie.popularity,
+      posterPath: movie.posterPath,
+      releaseDate: movie.releaseDate,
+      title: movie.title,
+      video: movie.video,
+      voteAverage: movie.voteAverage,
+      voteCount: movie.voteCount,
+    );
+  }
+
+  OriginalLanguage _getOriginalLanguage(String language) {
+    switch (language.toLowerCase()) {
+      case 'en':
+        return OriginalLanguage.EN;
+      case 'fr':
+        return OriginalLanguage.FR;
+      case 'hi':
+        return OriginalLanguage.HI;
+      case 'ko':
+        return OriginalLanguage.KO;
+      default:
+        return OriginalLanguage.EN;
+    }
   }
 }
 

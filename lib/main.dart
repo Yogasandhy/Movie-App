@@ -1,19 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:movie_api/Detail/detailProvider.dart';
-import 'package:movie_api/Genre/genreProvider.dart';
-import 'package:movie_api/Search/searchProvider.dart';
-import 'package:movie_api/bottomnavbar.dart';
-import 'package:movie_api/Home/homeProvider.dart';
+import 'package:movie_api/presentation/widgets/bottom_navigation_bar.dart';
+import 'package:movie_api/core/di/injection_container.dart' as di;
+import 'package:movie_api/presentation/providers/detail_provider.dart';
+import 'package:movie_api/presentation/providers/genre_provider.dart';
+import 'package:movie_api/presentation/providers/search_provider.dart';
+import 'package:movie_api/presentation/providers/home_provider.dart';
 import 'package:provider/provider.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await di.init();
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => HomeProvider()),
-        ChangeNotifierProvider(create: (_) => GenreProvider()),
-        ChangeNotifierProvider(create: (_) => SearchProvider()),
-        ChangeNotifierProvider(create: (_) => DetailProvider()),
+        ChangeNotifierProvider(create: (_) => di.sl<HomeProvider>()),
+        ChangeNotifierProvider(create: (_) => di.sl<GenreProvider>()),
+        ChangeNotifierProvider(create: (_) => di.sl<SearchProvider>()),
+        ChangeNotifierProvider(create: (_) => di.sl<DetailProvider>()),
       ],
       child: const MyApp(),
     ),

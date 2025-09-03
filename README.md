@@ -1,40 +1,38 @@
 # Movie App 🎬
 
-A modern Flutter application for discovering and exploring movies using The Movie Database (TMDB) API.
+A Flutter movie discovery app with clean architecture, built using TMDB API.
 
-## Features ✨
+## Features
 
-- **Browse Movies**: Discover popular, top-rated, and now playing movies
-- **Movie Details**: View comprehensive movie information with ratings and overview
-- **Search Movies**: Find your favorite movies quickly
-- **Genre Categories**: Filter movies by genre (Action, Romance, Comedy, Horror, Drama)
-- **Modern UI**: Clean and responsive design with smooth animations
-- **Movie Collections**: See all movies in organized collections
+- Browse popular, top-rated, and now playing movies
+- Search movies by title
+- Filter movies by genre
+- View detailed movie information
+- Save favorite movies
+- Clean and responsive UI
 
-## Screenshots 📱
+## Tech Stack
 
-The app features a modern dark theme with:
-- Clean navigation with bottom tabs
-- Featured movie carousel
-- Grid and list movie layouts
-- Detailed movie information screens
+- **Flutter** - UI framework
+- **Provider** - State management
+- **Clean Architecture** - Code organization
+- **TMDB API** - Movie data source
 
-## Tech Stack 🛠️
+## Project Structure
 
-- **Framework**: Flutter
-- **State Management**: Provider
-- **API**: The Movie Database (TMDB)
-- **HTTP Client**: http package
-- **UI Components**: Material Design 3
+```
+lib/
+├── core/                   # Core utilities
+├── features/               # Business logic
+│   └── movies/            # Movie feature
+├── presentation/          # UI components
+│   ├── pages/            # All screens
+│   ├── providers/        # State management
+│   └── widgets/          # Shared components
+└── main.dart             # App entry point
+```
 
-## API Setup 🔑
-
-This app uses TMDB API. To run the project:
-
-1. Get your API key from [TMDB](https://www.themoviedb.org/settings/api)
-2. The API key is already configured in the project files
-
-## Getting Started 🚀
+## Getting Started
 
 1. Clone the repository
 ```bash
@@ -48,6 +46,16 @@ flutter pub get
 
 3. Run the app
 ```bash
+flutter run
+```
+
+## API
+
+This app uses The Movie Database (TMDB) API. The API key is already configured in the project.
+
+## Contributing
+
+Feel free to contribute to this project by opening issues or submitting pull requests.
 flutter run
 ```
 

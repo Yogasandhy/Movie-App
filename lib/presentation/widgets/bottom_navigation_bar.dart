@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:movie_api/Home/HomeScreen.dart';
-import 'package:movie_api/MeScreen.dart';
-import 'package:movie_api/SaveScreen.dart';
+import 'package:movie_api/presentation/pages/home_screen.dart';
+import 'package:movie_api/presentation/pages/me_screen.dart';
+import 'package:movie_api/presentation/pages/save_screen.dart';
 
 class BottomnavbarScreen extends StatefulWidget {
   const BottomnavbarScreen({super.key});

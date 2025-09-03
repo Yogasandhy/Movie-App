@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:movie_api/Detail/detailScreen.dart';
-import 'package:movie_api/movie_model.dart';
+import 'detail_screen.dart';
+import '../../features/movies/data/models/legacy_movie_model.dart';
 
 class SeeAllMoviesScreen extends StatefulWidget {
   final String category;

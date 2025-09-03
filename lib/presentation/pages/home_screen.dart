@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:movie_api/Detail/detailScreen.dart';
-import 'package:movie_api/Genre/genreProvider.dart';
-import 'package:movie_api/Genre/genreScreen.dart';
-import 'package:movie_api/movie_model.dart';
-import 'package:movie_api/Home/homeProvider.dart';
-import 'package:movie_api/Home/see_all_movies_screen.dart';
-import 'package:movie_api/Search/searchScreen.dart';
+import '../../features/movies/data/models/legacy_movie_model.dart';
+import '../providers/home_provider.dart';
+import '../providers/genre_provider.dart';
+import 'detail_screen.dart';
+import 'genre_screen.dart';
+import 'search_screen.dart';
+import 'see_all_movies_screen.dart';
 import 'package:scroll_page_view/pager/page_controller.dart';
 import 'package:scroll_page_view/pager/scroll_page_view.dart';
 import 'package:provider/provider.dart';
@@ -29,14 +29,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   String selectedCategory = 'All';
   int _selectedButton = 0;
-  late HomeProvider _homeProvider;
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
 
   @override
   void initState() {
     super.initState();
-    _homeProvider = HomeProvider();
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 1000),
       vsync: this,
@@ -44,8 +42,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
     );
-    _loadInitialData();
     _animationController.forward();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadInitialData();
+    });
   }
 
   @override
@@ -55,9 +55,45 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   void _loadInitialData() async {
-    await _homeProvider.fetchPopularMovies();
-    await _homeProvider.fetchTopRatedMovies();
-    await _homeProvider.fetchNowPlayingMovies();
+    final homeProvider = context.read<HomeProvider>();
+    await homeProvider.fetchPopularMovies();
+    await homeProvider.fetchTopRatedMovies();
+    await homeProvider.fetchNowPlayingMovies();
+    await homeProvider.fetchUpcomingMovies();
+  }
+
+  List<Result> _convertToResultList(List movies) {
+    return movies.map((movie) => Result(
+      adult: movie.adult,
+      backdropPath: movie.backdropPath,
+      genreIds: movie.genreIds,
+      id: movie.id,
+      originalLanguage: _getOriginalLanguage(movie.originalLanguage),
+      originalTitle: movie.originalTitle,
+      overview: movie.overview,
+      popularity: movie.popularity,
+      posterPath: movie.posterPath,
+      releaseDate: movie.releaseDate,
+      title: movie.title,
+      video: movie.video,
+      voteAverage: movie.voteAverage,
+      voteCount: movie.voteCount,
+    )).toList();
+  }
+
+  OriginalLanguage _getOriginalLanguage(String language) {
+    switch (language.toLowerCase()) {
+      case 'en':
+        return OriginalLanguage.EN;
+      case 'fr':
+        return OriginalLanguage.FR;
+      case 'hi':
+        return OriginalLanguage.HI;
+      case 'ko':
+        return OriginalLanguage.KO;
+      default:
+        return OriginalLanguage.EN;
+    }
   }
 
   Widget _buildModernButton(int genreId, String text, int buttonId) {
@@ -79,18 +115,20 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 _selectedButton = 0;
                 selectedCategory = 'All';
               });
-              _homeProvider.fetchPopularMovies();
-              _homeProvider.fetchTopRatedMovies();
-              _homeProvider.fetchNowPlayingMovies();
+              final homeProvider = context.read<HomeProvider>();
+              homeProvider.fetchPopularMovies();
+              homeProvider.fetchTopRatedMovies();
+              homeProvider.fetchNowPlayingMovies();
             }
           } else {
             setState(() {
               _selectedButton = buttonId;
               selectedCategory = 'All';
             });
-            _homeProvider.fetchPopularMovies();
-            _homeProvider.fetchTopRatedMovies();
-            _homeProvider.fetchNowPlayingMovies();
+            final homeProvider = context.read<HomeProvider>();
+            homeProvider.fetchPopularMovies();
+            homeProvider.fetchTopRatedMovies();
+            homeProvider.fetchNowPlayingMovies();
           }
         },
         child: Container(
@@ -140,192 +178,188 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<HomeProvider>.value(
-      value: _homeProvider,
-      child: Scaffold(
-        body: SafeArea(
-          child: FadeTransition(
-            opacity: _fadeAnimation,
-            child: Column(
-              children: [
-                // Header with greeting and search
-                Container(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Greeting
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Welcome back! 👋',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.grey[400],
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          const Text(
-                            'Let\'s find movies',
-                            style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
-                      // Modern Search Bar
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => const SearchScreen()),
-                          );
-                        },
-                        child: Container(
-                          height: 55,
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                const Color(0xFF31304D),
-                                const Color(0xFF31304D).withValues(alpha: 0.8),
-                              ],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                              color: Colors.grey.withValues(alpha: 0.2),
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.1),
-                                blurRadius: 10,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
-                          ),
-                          child: Row(
-                            children: [
-                              const Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 20.0),
-                                child: Icon(
-                                  Icons.search_rounded,
-                                  color: Colors.grey,
-                                  size: 24,
-                                ),
-                              ),
-                              Expanded(
-                                child: Text(
-                                  'Search movies, genres...',
-                                  style: TextStyle(
-                                    color: Colors.grey[400],
-                                    fontSize: 16,
-                                  ),
-                                ),
-                              ),
-                            ],
+    return Scaffold(
+      body: SafeArea(
+        child: FadeTransition(
+          opacity: _fadeAnimation,
+          child: Column(
+            children: [
+              // Header with greeting and search
+              Container(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Greeting
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Welcome back! 👋',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.grey[400],
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-                // Content
-                Expanded(
-                  child: CustomScrollView(
-                    physics: const BouncingScrollPhysics(),
-                    slivers: [
-                      // Featured Movies Carousel
-                      SliverToBoxAdapter(
-                        child: Container(
-                          height: 280,
-                          margin: const EdgeInsets.only(bottom: 20),
-                          child: FutureBuilder(
-                            future: _homeProvider.fetchUpcomingMovies(),
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState == ConnectionState.waiting) {
-                                return const Center(
-                                  child: CircularProgressIndicator(color: Colors.red),
-                                );
-                              } else if (snapshot.error != null) {
-                                return const Center(
-                                  child: Text(
-                                    'Failed to load featured movies',
-                                    style: TextStyle(color: Colors.white),
-                                  ),
-                                );
-                              } else {
-                                return Consumer<HomeProvider>(
-                                  builder: (context, homeProvider, child) {
-                                    return ScrollPageView(
-                                      controller: ScrollPageController(),
-                                      children: homeProvider.upcomingMovies
-                                          .take(5)
-                                          .map((movie) => _buildFeaturedMovieCard(movie))
-                                          .toList(),
-                                    );
-                                  },
-                                );
-                              }
-                            },
+                        const SizedBox(height: 4),
+                        const Text(
+                          'Let\'s find movies',
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
                           ),
                         ),
-                      ),
-                      // Categories
-                      SliverToBoxAdapter(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                'Categories',
-                                style: TextStyle(
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              const SizedBox(height: 15),
-                              SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: Row(
-                                  children: genreIds.entries
-                                      .map((entry) => _buildModernButton(
-                                            entry.value,
-                                            entry.key,
-                                            entry.value,
-                                          ))
-                                      .toList(),
-                                ),
-                              ),
-                              const SizedBox(height: 30),
-                            ],
-                          ),
-                        ),
-                      ),
-                      // Movie Sections
-                      if (selectedCategory == 'All') ...[
-                        _buildModernMovieSection('🔥 Trending Now', 'Popular'),
-                        _buildModernMovieSection('⭐ Top Rated', 'Top Rated'),
-                        _buildModernMovieSection('🎬 Now Playing', 'Now Playing'),
                       ],
-                    ],
-                  ),
+                    ),
+                    const SizedBox(height: 20),
+                    // Modern Search Bar
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const SearchScreen()),
+                        );
+                      },
+                      child: Container(
+                        height: 55,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              const Color(0xFF31304D),
+                              const Color(0xFF31304D).withValues(alpha: 0.8),
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: Colors.grey.withValues(alpha: 0.2),
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.1),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          children: [
+                            const Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 20.0),
+                              child: Icon(
+                                Icons.search_rounded,
+                                color: Colors.grey,
+                                size: 24,
+                              ),
+                            ),
+                            Expanded(
+                              child: Text(
+                                'Search movies, genres...',
+                                style: TextStyle(
+                                  color: Colors.grey[400],
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+              // Content
+              Expanded(
+                child: CustomScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  slivers: [
+                    // Featured Movies Carousel
+                    SliverToBoxAdapter(
+                      child: Container(
+                        height: 280,
+                        margin: const EdgeInsets.only(bottom: 20),
+                        child: Consumer<HomeProvider>(
+                          builder: (context, homeProvider, child) {
+                            if (homeProvider.isLoading) {
+                              return const Center(
+                                child: CircularProgressIndicator(color: Colors.red),
+                              );
+                            } else if (homeProvider.errorMessage.isNotEmpty) {
+                              return const Center(
+                                child: Text(
+                                  'Failed to load featured movies',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              );
+                            } else if (homeProvider.upcomingMovies.isEmpty) {
+                              return const Center(
+                                child: CircularProgressIndicator(color: Colors.red),
+                              );
+                            } else {
+                              return ScrollPageView(
+                                controller: ScrollPageController(),
+                                children: homeProvider.upcomingMovies
+                                    .take(5)
+                                    .map((movie) => _buildFeaturedMovieCard(movie))
+                                    .toList(),
+                              );
+                            }
+                          },
+                        ),
+                      ),
+                    ),
+                    // Categories
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Categories',
+                              style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                            const SizedBox(height: 15),
+                            SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                children: genreIds.entries
+                                    .map((entry) => _buildModernButton(
+                                          entry.value,
+                                          entry.key,
+                                          entry.value,
+                                        ))
+                                    .toList(),
+                              ),
+                            ),
+                            const SizedBox(height: 30),
+                          ],
+                        ),
+                      ),
+                    ),
+                    // Movie Sections
+                    if (selectedCategory == 'All') ...[
+                      _buildModernMovieSection('🔥 Trending Now', 'Popular'),
+                      _buildModernMovieSection('⭐ Top Rated', 'Top Rated'),
+                      _buildModernMovieSection('🎬 Now Playing', 'Now Playing'),
+                    ],
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
       ),
     );
   }
 
-  Widget _buildFeaturedMovieCard(Result movie) {
+  Widget _buildFeaturedMovieCard(movie) {
     return GestureDetector(
       onTap: () => Navigator.of(context).push(MaterialPageRoute(
         builder: (context) => DetailScreen(movieId: movie.id),
@@ -462,16 +496,17 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 ),
                 TextButton(
                   onPressed: () {
+                    final homeProvider = context.read<HomeProvider>();
                     List<Result> movies = [];
                     switch (category) {
                       case 'Popular':
-                        movies = _homeProvider.popularMovies;
+                        movies = _convertToResultList(homeProvider.popularMovies);
                         break;
                       case 'Top Rated':
-                        movies = _homeProvider.topratedmovies;
+                        movies = _convertToResultList(homeProvider.topRatedMovies);
                         break;
                       case 'Now Playing':
-                        movies = _homeProvider.nowplayingmovies;
+                        movies = _convertToResultList(homeProvider.nowPlayingMovies);
                         break;
                     }
                     
@@ -500,7 +535,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ),
           const SizedBox(height: 10),
           SizedBox(
-            height: 270, // Increased height untuk fixed image size
+            height: 270,
             child: _buildModernMovieList(category),
           ),
           const SizedBox(height: 30),
@@ -512,17 +547,17 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   Widget _buildModernMovieList(String category) {
     return Consumer2<HomeProvider, GenreProvider>(
       builder: (context, homeData, genreData, child) {
-        List<Result> movies = [];
+        List movies = [];
 
         switch (category) {
           case 'Popular':
             movies = homeData.popularMovies;
             break;
           case 'Top Rated':
-            movies = homeData.topratedmovies;
+            movies = homeData.topRatedMovies;
             break;
           case 'Now Playing':
-            movies = homeData.nowplayingmovies;
+            movies = homeData.nowPlayingMovies;
             break;
           default:
             movies = genreData.moviesByGenre;
@@ -552,7 +587,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   children: [
                     // Movie Poster - Fixed Height
                     Container(
-                      height: 180, // Fixed height untuk semua poster
+                      height: 180,
                       width: double.infinity,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(15),
@@ -587,7 +622,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     const SizedBox(height: 12),
                     // Movie Title - Fixed Height
                     SizedBox(
-                      height: 40, // Fixed height untuk title area
+                      height: 40,
                       child: Text(
                         movie.title,
                         style: const TextStyle(
@@ -602,7 +637,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     const SizedBox(height: 4),
                     // Rating and Year
                     SizedBox(
-                      height: 20, // Fixed height untuk rating area
+                      height: 20,
                       child: Row(
                         children: [
                           const Icon(

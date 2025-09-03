@@ -1,6 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:movie_api/Detail/detailProvider.dart';
+import '../providers/detail_provider.dart';
 import 'package:provider/provider.dart';
 
 class DetailScreen extends StatefulWidget {
@@ -14,22 +14,20 @@ class DetailScreen extends StatefulWidget {
 
 class _DetailScreenState extends State<DetailScreen> {
   bool showFullOverview = false;
-  late DetailProvider _detailProvider;
 
   @override
   void initState() {
     super.initState();
-    _detailProvider = DetailProvider();
-    _detailProvider.fetchMovieDetail(widget.movieId);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<DetailProvider>().fetchMovieDetail(widget.movieId);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: ChangeNotifierProvider<DetailProvider>.value(
-        value: _detailProvider,
-        child: Consumer<DetailProvider>(
-          builder: (context, detailProvider, child) {
+      body: Consumer<DetailProvider>(
+        builder: (context, detailProvider, child) {
           // Show loading state
           if (detailProvider.movieDetail == null) {
             return const Center(
@@ -186,7 +184,7 @@ class _DetailScreenState extends State<DetailScreen> {
                           const SizedBox(width: 12),
                           // Release Year
                           Text(
-                            detailProvider.movieDetail?.releaseDate?.substring(0, 4) ?? '',
+                            detailProvider.movieDetail?.releaseDate.substring(0, 4) ?? '',
                             style: const TextStyle(
                               fontSize: 14,
                               color: Colors.grey,
@@ -199,7 +197,7 @@ class _DetailScreenState extends State<DetailScreen> {
                       Wrap(
                         spacing: 8,
                         children: detailProvider.movieDetail?.genres
-                                ?.map((genre) => Container(
+                                .map((genre) => Container(
                                       padding: const EdgeInsets.symmetric(
                                         horizontal: 12,
                                         vertical: 6,
@@ -212,7 +210,7 @@ class _DetailScreenState extends State<DetailScreen> {
                                         ),
                                       ),
                                       child: Text(
-                                        genre.name ?? '',
+                                        genre.name,
                                         style: const TextStyle(
                                           color: Colors.white,
                                           fontSize: 12,
@@ -361,8 +359,7 @@ class _DetailScreenState extends State<DetailScreen> {
               ),
             ],
           );
-          },
-        ),
+        },
       ),
     );
   }

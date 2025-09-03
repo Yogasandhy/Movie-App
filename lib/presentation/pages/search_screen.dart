@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:movie_api/Search/searchProvider.dart';
+import '../providers/search_provider.dart';
 import 'package:provider/provider.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -25,7 +25,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 onTap: () {},
                 onChanged: (value) {
                   Provider.of<SearchProvider>(context, listen: false)
-                      .searchMovies(value);
+                      .searchMoviesWithQuery(value);
                 },
                 leading: const Icon(Icons.search),
               ),
