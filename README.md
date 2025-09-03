@@ -71,15 +71,4 @@ lib/
 ├── main.dart        # App entry point
 └── movie_model.dart # Data models
 ```
-
-## Contributing 🤝
-
-Feel free to fork this project and submit pull requests for any improvements.
-
-## License 📄
-
-This project is open source and available under the [MIT License](LICENSE).
-
----
-
 Built with ❤️ using Flutter
