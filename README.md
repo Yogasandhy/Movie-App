@@ -48,27 +48,4 @@ flutter pub get
 ```bash
 flutter run
 ```
-
-## API
-
-This app uses The Movie Database (TMDB) API. The API key is already configured in the project.
-
-## Contributing
-
-Feel free to contribute to this project by opening issues or submitting pull requests.
-flutter run
-```
-
-## Project Structure 📁
-
-```
-lib/
-├── Detail/          # Movie detail screens and providers
-├── Genre/           # Genre filtering functionality
-├── Home/            # Home screen and movie lists
-├── Search/          # Search functionality
-├── bottomnavbar.dart # Bottom navigation
-├── main.dart        # App entry point
-└── movie_model.dart # Data models
-```
 Built with ❤️ using Flutter
